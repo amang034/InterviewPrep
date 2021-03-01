@@ -1,0 +1,103 @@
+// https://leetcode.com/problems/find-positive-integer-solution-for-a-given-equation/submissions/
+
+/*
+Given a callable function f(x, y) with a hidden formula and a value z, reverse engineer the formula and return all positive integer pairs x and y where f(x,y) == z. You may return the pairs in any order.
+
+While the exact formula is hidden, the function is monotonically increasing, i.e.:
+
+f(x, y) < f(x + 1, y)
+f(x, y) < f(x, y + 1)
+The function interface is defined like this:
+
+interface CustomFunction {
+public:
+  // Returns some positive integer f(x, y) for two positive integers x and y based on a formula.
+  int f(int x, int y);
+};
+*/
+
+
+/*
+ * // This is the custom function interface.
+ * // You should not implement it, or speculate about its implementation
+ * class CustomFunction {
+ * public:
+ *     // Returns f(x, y) for any given positive integers x and y.
+ *     // Note that f(x, y) is increasing with respect to both x and y.
+ *     // i.e. f(x, y) < f(x + 1, y), f(x, y) < f(x, y + 1)
+ *     int f(int x, int y);
+ * };
+ */
+
+class Solution {
+public:
+    vector<vector<int>> findSolution(CustomFunction& customfunction, int z) {
+        vector<vector<int>> result;
+        int maxY = GetMaxY(customfunction, z, 1);
+        for (int y = 1; y <= maxY; y++)
+        {
+            int x = GetX(customfunction, z, y);
+            if (x >=1 && x<=1000 && customfunction.f(x,y) == z)
+            {
+                result.push_back({x,y});
+            }
+        }
+        
+        return result;
+
+    }
+private:
+    int GetMaxY(CustomFunction& customfunction, int z, int x)
+    {
+        int start = 1;
+        int end = 1000;
+        
+        while (start <= end)
+        {
+            int mid = (start + end)/2;
+            int curZ = customfunction.f(x, mid);
+            
+            if (curZ <= z)
+            {
+                start = mid+1;
+            }
+            
+            else
+            {
+                end = mid-1;
+            }
+        }
+        
+        return end;
+   
+    }
+    
+    int GetX(CustomFunction& customfunction, int z, int y)
+    {
+        int start = 1;
+        int end = 1000;
+        
+        while (start <= end)
+        {
+            int mid = (start + end)/2;
+            int curZ = customfunction.f(mid, y);
+            
+            if (curZ == z)
+            {
+                return mid;
+            }
+            
+            else if (curZ > z)
+            {
+                end = mid-1;
+            }
+            
+            else
+            {
+                start = mid+1;
+            }
+        }
+        
+        return end;
+    }   
+};
