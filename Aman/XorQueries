@@ -1,0 +1,150 @@
+
+// https://leetcode.com/problems/xor-queries-of-a-subarray/
+/*
+Given the array arr of positive integers and the array queries where queries[i] = [Li, Ri], for each query i compute the XOR of elements from Li to Ri (that is, arr[Li] xor arr[Li+1] xor ... xor arr[Ri] ). Return an array containing the result for the given queries.
+*/
+
+// Solution contains both prefix Sum algo and Segment Tree algo
+
+struct Node
+{
+    int val;
+    int start;
+    int end;
+    Node* left;
+    Node* right;
+    
+    Node(int val, int start, int end, Node* left, Node* right)
+    {
+        this->val = val;
+        this->start = start;
+        this->end = end;
+        this->left = left;
+        this->right = right;
+    }
+};
+class Solution {
+public:
+    vector<int> xorQueries(vector<int>& arr, vector<vector<int>>& queries) {
+        vector<int> result;
+        vector<vector<int>> prefixSum;
+//        Node* root = CreateTree(arr, 0, arr.size()-1);
+        CreatePrefixBitSum(arr, prefixSum);
+        //Traverse(root);
+        for (int i = 0; i < queries.size(); i++)
+        {
+            result.push_back(GetXorFromPrefixSum(prefixSum, queries[i][0], queries[i][1]));
+        }
+        return result;
+    }
+private:
+    
+    int GetXorFromPrefixSum(const vector<vector<int>>& prefixSum, int start, int end)
+    {
+        int result = 0;
+        long long mask = 0x1;
+        for (int i = 0; i < 32; i++)
+        {
+            int ones = prefixSum[end][i] - (start == 0 ? 0 : prefixSum[start-1][i]);
+            if (ones%2 == 1)
+            {
+                result = result | mask;
+            }
+            
+            mask = mask << 1;
+        }
+        
+        return result;
+    }
+    
+    void CreatePrefixBitSum(const vector<int>& arr, vector<vector<int>>& prefixSum)
+    {
+        for (int i = 0; i < arr.size(); i++)
+        {
+            long long mask = 0x1;
+            vector<int> num(32,0);
+            for (int j = 0; j < 32; j++)
+            {
+                if (arr[i] & mask)
+                {
+                    num[j] = 1 + (i==0 ? 0 : prefixSum[i-1][j]);
+                }
+                else
+                {
+                    num[j] = (i==0 ? 0 : prefixSum[i-1][j]);
+                }
+                
+                mask = mask << 1;
+            }
+            prefixSum.push_back(num);
+            
+        }
+    }
+    Node* CreateTree(const vector<int>& arr, int start, int end)
+    {
+        if (start == end)
+        {
+            return new Node(arr[start], start, end, nullptr, nullptr);
+        }
+        
+        int leftStart = start;
+        int leftEnd = (start+end)/2;
+        int rightStart = leftEnd + 1;
+        int rightEnd = end;
+        
+        Node* left = CreateTree(arr, leftStart, leftEnd);
+        Node* right = CreateTree(arr, rightStart, rightEnd);
+        
+        int val = left->val^right->val;
+        return new Node(val, start, end, left, right);
+    }
+    
+    void Traverse(Node* root)
+    {
+        if (root == nullptr)
+            return;
+        
+        PrintNode(root);
+        Traverse(root->left);
+        Traverse(root->right);
+    }
+    
+    void PrintNode(const Node* node)
+    {
+        cout<<"[ "<<node->val<<", "<<node->start<<", "<<node->end<<" ]";
+    }
+    
+    int GetXor(Node* root, int start, int end)
+    {
+        if (root == nullptr)
+        {
+            return 0;
+        }
+        
+        int leftStart = root->start;
+        int rightEnd = root->end;
+        int leftEnd = (leftStart + rightEnd)/2;
+        int rightStart = leftEnd + 1;
+        
+        // Case 1 - Equal
+        if (start == leftStart && end == rightEnd)
+        {
+            return root->val;    
+        }
+        
+        // Case 2 Completely Left
+        if (start >= leftStart && start <=leftEnd && end <= leftEnd)
+        {
+          return GetXor(root->left, start, end);  
+        }
+        
+        // Case 3 Completely right 
+        if (start >= rightStart && end <= rightEnd && end <= rightEnd)
+        {
+            return GetXor(root->right, start, end);
+        }
+        
+        // Case 4 Both left Right
+        return (GetXor(root->left, start, leftEnd) ^ GetXor(root->right, rightStart, end) );
+    }
+};
