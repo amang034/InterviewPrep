@@ -1,0 +1,60 @@
+// https://leetcode.com/problems/count-substrings-that-differ-by-one-character/
+
+/*
+Given two strings s and t, find the number of ways you can choose a non-empty substring of s and replace a single character by a different character such that the resulting substring is a substring of t. In other words, find the number of substrings in s that differ from some substring in t by exactly one character.
+
+For example, the underlined substrings in "computer" and "computation" only differ by the 'e'/'a', so this is a valid way.
+
+Return the number of substrings that satisfy the condition above.
+
+A substring is a contiguous sequence of characters within a string.
+*/
+
+class Solution {
+public:
+    int countSubstrings(string s, string t) {
+     
+        int dpSame[100][100] = {0};
+        int dpDiff[100][100] = {0};
+        int result = 0;
+        
+        int r = s.size();
+        int c = t.size();
+        for (int i = 0; i < s.size(); i++)
+        {
+            for (int j = 0; j < t.size(); j++)
+            {
+               
+                if (j == 0 || i == 0)
+                {
+                    dpSame[i][j] = (s[i] == t[j] ? 1 : 0); 
+                    dpDiff[i][j] = (s[i] == t[j] ? 0 : 1);
+                }
+                
+                else
+                {
+                    dpSame[i][j] = (s[i] == t[j] ? 1+dpSame[i-1][j-1] : 0);
+                    dpDiff[i][j] = (s[i] == t[j] ? dpDiff[i-1][j-1] : 1+dpSame[i-1][j-1]);
+                }
+                
+                result = result + dpDiff[i][j];
+            }
+        }
+        
+       // printDp(dpDiff, r, c);
+        return result;
+    }
+    
+    void printDp(int dp[100][100], int r, int c)
+    {
+        cout<<"\n----Dp---\n";
+        for (int i = 0; i < r; i++)
+        {
+            for (int j = 0; j < c; j++)
+            {
+                cout<<dp[i][j]<<" ";
+            }
+            cout<<"\n";
+        }
+    }
+};

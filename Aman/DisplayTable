@@ -1,0 +1,79 @@
+// https://leetcode.com/problems/display-table-of-food-orders-in-a-restaurant/
+
+/*
+Given the array orders, which represents the orders that customers have done in a restaurant. More specifically orders[i]=[customerNamei,tableNumberi,foodItemi] where customerNamei is the name of the customer, tableNumberi is the table customer sit at, and foodItemi is the item customer orders.
+
+Return the restaurant's “display table”. The “display table” is a table whose row entries denote how many of each food item each table ordered. The first column is the table number and the remaining columns correspond to each food item in alphabetical order. The first row should be a header whose first column is “Table”, followed by the names of the food items. Note that the customer names are not part of the table. Additionally, the rows should be sorted in numerically increasing order.
+*/
+
+class Solution {
+public:
+    vector<vector<string>> displayTable(vector<vector<string>>& orders) {
+     
+        vector<vector<string>> result;
+        vector<string> header = {"Table"};
+        map<string, bool> foodItems;
+        map<int, map<string, int>> displayTable;
+        for (int i = 0; i < orders.size(); i++)
+        {
+            stringstream tableS(orders[i][1]);
+            int tableNo;
+            tableS >> tableNo;
+            foodItems[orders[i][2]] = true;
+            
+            map<string, int> row;
+            if (displayTable.find(tableNo) == displayTable.end())
+            {
+                
+                row[orders[i][2]] = 1;
+                displayTable[tableNo] = row;
+            }
+            else
+            {
+                map<string, int>& row = displayTable[tableNo];
+                if (row.find(orders[i][2]) == row.end())
+                {
+                    row[orders[i][2]] = 1;
+                }
+                else
+                {
+                    row[orders[i][2]] = row[orders[i][2]] + 1;
+                }
+            }
+            
+            
+        }
+        
+        map<string, bool>::iterator foodIter;
+        for (foodIter = foodItems.begin(); foodIter != foodItems.end();  foodIter++)
+        {
+            header.push_back(foodIter->first);
+        }
+        
+        result.push_back(header);
+        
+        map<int, map<string, int>>::iterator tableIter;
+        
+        for (tableIter = displayTable.begin(); tableIter != displayTable.end(); tableIter++)
+        {
+            vector<string> displayRow;
+            displayRow.push_back(to_string(tableIter->first));
+            for (int i = 1; i < header.size(); i++)
+            {
+                if (tableIter->second.find(header[i]) == tableIter->second.end())
+                {
+                   displayRow.push_back("0"); 
+                }
+                else
+                {
+                    displayRow.push_back(to_string(tableIter->second[header[i]])); 
+                }
+            }
+            
+            result.push_back(displayRow);
+        }
+        
+        return result;
+        
+    }
+};
