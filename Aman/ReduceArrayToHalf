@@ -1,0 +1,45 @@
+// https://leetcode.com/problems/reduce-array-size-to-the-half/
+/*
+Given an array arr.  You can choose a set of integers and remove all the occurrences of these integers in the array.
+
+Return the minimum size of the set so that at least half of the integers of the array are removed.
+*/
+
+class Solution {
+public:
+    int minSetSize(vector<int>& arr) {
+        unordered_map<int, int> frequency;
+        
+        for (int i = 0; i < arr.size(); i++)
+        {
+            if (frequency.find(arr[i]) == frequency.end())
+            {
+                frequency[arr[i]] = 1;
+            }
+            else
+            {
+                frequency[arr[i]] = frequency[arr[i]] + 1;
+            }
+            
+        }
+        
+        unordered_map<int, int>::iterator iter;
+        multimap<int, int> values;
+        multimap<int, int>::reverse_iterator riter;
+        for (iter = frequency.begin(); iter != frequency.end(); iter++)
+        {
+            values.insert(pair<int, int>(iter->second, iter->first));    
+        }
+        
+        int sum=0, result = 0;
+        for (riter = values.rbegin(); riter != values.rend(); riter++)
+        {   
+            sum = sum + riter->first;
+            result = result + 1;
+            if (sum >= arr.size()/2)
+                break;
+        }
+        
+        return result;
+    }
+};
