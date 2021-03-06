@@ -1,0 +1,76 @@
+// https://leetcode.com/problems/max-area-of-island/
+/*
+Given a non-empty 2D array grid of 0's and 1's, an island is a group of 1's (representing land) connected 4-directionally (horizontal or vertical.) You may assume all four edges of the grid are surrounded by water.
+
+Find the maximum area of an island in the given 2D array. (If there is no island, the maximum area is 0.)
+*/
+
+class Solution {
+public:
+    int maxAreaOfIsland(vector<vector<int>>& grid) {
+        int currentArea = 0, maxArea = 0;
+        
+        for (int i = 0; i < grid.size(); i++)
+        {
+            for (int j = 0; j < grid[0].size(); j++)
+            {
+                currentArea = 0;
+                if (grid[i][j] == 1)
+                {
+                    DFS(grid, i, j,  currentArea, maxArea);   
+                }
+                
+            }
+        }
+        
+        return maxArea;
+    }
+private:
+    void DFS(vector<vector<int>>& grid, int startRow, int startCol, int& currentArea, int& maxArea)
+    {
+        currentArea = currentArea + 1;
+        
+        if (currentArea > maxArea)
+        {
+            maxArea = currentArea;
+        }
+        
+        grid[startRow][startCol] = 2;
+        
+        //  Top
+        if(possible(grid, startRow-1, startCol))
+        {
+            DFS(grid, startRow-1, startCol, currentArea, maxArea);
+        }
+        
+        // Bottom
+        if(possible(grid, startRow+1, startCol))
+        {
+            DFS(grid, startRow+1, startCol, currentArea, maxArea);
+        }
+        
+        // Left
+        if(possible(grid, startRow, startCol-1))
+        {
+            DFS(grid, startRow, startCol-1, currentArea, maxArea);
+        }
+        
+        // Right
+        if(possible(grid, startRow, startCol+1))
+        {
+            DFS(grid, startRow, startCol+1, currentArea, maxArea);
+        }
+    }
+    
+    bool possible(const vector<vector<int>>& grid, int row, int col)
+    {
+        int rows = grid.size();
+        int cols = rows > 0 ? grid[0].size() : 0;
+        if (row < 0 || row >= rows || col < 0 || col >= cols || grid[row][col] != 1)
+        {
+            return false;
+        }
+        
+        return true;
+    }
+};
