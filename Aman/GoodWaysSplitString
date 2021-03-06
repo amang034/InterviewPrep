@@ -1,0 +1,57 @@
+// https://leetcode.com/problems/number-of-good-ways-to-split-a-string/
+/*
+You are given a string s, a split is called good if you can split s into 2 non-empty strings p and q where its concatenation is equal to s and the number of distinct letters in p and q are the same.
+
+Return the number of good splits you can make in s.
+*/
+
+class Solution {
+public:
+    int numSplits(string s) {
+     
+        vector<int> arrInc(s.size(), 0);
+        vector<int> arrDec(s.size(), 0);
+        unordered_map<char, bool> charMapInc;
+        unordered_map<char, bool> charMapDec;
+        arrInc[0] = 1;
+        charMapInc[s[0]] = true;
+        arrDec[s.size()-1] = 1;
+        charMapDec[s[s.size()-1]] = true;
+        int l = s.size()-1;
+        
+        for (int i = 1; i < s.size(); i++)
+        {
+            if (charMapInc.find(s[i]) == charMapInc.end())
+            {
+                charMapInc[s[i]] = true;
+                arrInc[i] = arrInc[i-1] + 1;
+            }
+            else
+            {
+                arrInc[i] = arrInc[i-1];
+            }
+            
+            if (charMapDec.find(s[l-i]) == charMapDec.end())
+            {
+                charMapDec[s[l-i]] = true;
+                arrDec[l-i] = arrDec[l-i+1] + 1;
+            }
+            else
+            {
+                arrDec[l-i] = arrDec[l-i+1];
+            }
+                
+            
+        }
+        
+        int result = 0;
+        for (int i = 0; i < s.size()-1; i++)
+        {
+            if (arrInc[i] == arrDec[i+1])
+                result++;
+        }
+        
+        return result;
+        
+    }
+};

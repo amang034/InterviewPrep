@@ -1,0 +1,80 @@
+// https://leetcode.com/problems/circular-permutation-in-binary-representation/
+/*
+Given 2 integers n and start. Your task is return any permutation p of (0,1,2.....,2^n -1) such that :
+
+p[0] = start
+p[i] and p[i+1] differ by only one bit in their binary representation.
+p[0] and p[2^n -1] must also differ by only one bit in their binary representation.
+*/
+
+class Solution {
+public:
+    vector<int> circularPermutation(int n, int start) {
+        int size = pow(2,n);
+        vector<int> diff1(size, 0);
+        vector<int> result(size, 0);
+        int startIndex;
+        fillDiff1(diff1, start, startIndex);
+        //PrintVector(diff1);
+        rotate(diff1, result, startIndex);
+        return result;
+    }
+private:
+    void rotate(const vector<int>& diff1, vector<int>& result, int startIndex)
+    {
+        int k = 0;
+        for (int i = startIndex; i < diff1.size(); i++)
+        {
+            result[k] = diff1[i];
+            k++;
+        }
+        
+        int j = 0;
+        while (k < result.size())
+        {
+            result[k] = diff1[j];
+            k++;
+            j++;
+        }
+    }
+    void fillDiff1(vector<int>& diff,int startIn,  int& startOut)
+    {
+        diff[0] = 0;
+        diff[1] = 1;
+        if (startIn < 2)
+        {
+            startOut = startIn;
+        }
+        int start = 2;
+        while (start < diff.size())
+        {
+            fillArr(diff, start, startIn, startOut);
+            start = start*2;
+        }
+    }
+    void fillArr(vector<int>& arr, int start, int startIn,  int& startOut)
+    {
+        int end = 2*start-1;
+        int k = end;
+        while (k >=start)
+        {
+            arr[k] = arr[end-k] + start;
+            if (arr[k] == startIn)
+            {
+                startOut = k;
+            }
+            
+            k--;
+        }
+    }
+    
+    void PrintVector(const vector<int>& arr)
+    {
+        cout<<"-----------------------\n";
+        for (int i = 0; i < arr.size(); i++)
+        {
+            cout<<arr[i]<<" ";
+        }
+        cout<<"\n";
+    }
+};
