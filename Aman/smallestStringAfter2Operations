@@ -1,0 +1,191 @@
+// https://leetcode.com/problems/lexicographically-smallest-string-after-applying-operations/
+
+/*
+ou are given a string s of even length consisting of digits from 0 to 9, and two integers a and b.
+
+You can apply either of the following two operations any number of times and in any order on s:
+
+Add a to all odd indices of s (0-indexed). Digits post 9 are cycled back to 0. For example, if s = "3456" and a = 5, s becomes "3951".
+Rotate s to the right by b positions. For example, if s = "3456" and b = 1, s becomes "6345".
+Return the lexicographically smallest string you can obtain by applying the above operations any number of times on s.
+
+A string a is lexicographically smaller than a string b (of the same length) if in the first position where a and b differ, string a has a letter that appears earlier in the alphabet than the corresponding letter in b. For example, "0158" is lexicographically smaller than "0190" because the first position they differ is at the third letter, and '5' comes before '9'.
+*/
+
+class Solution {
+public:
+    string findLexSmallestString(string s, int a, int b) {
+        int minArr[10][10];
+        for (int i = 0; i < 10; i++)
+        {
+            for (int j = 0; j < 10; j++)
+            {
+                minArr[i][j] = getMin(i, j);
+            }
+        }
+      
+        int incr = gcd(b, s.size());
+        string min = s;
+        for (int i = 0; i < s.size(); i=i+incr)
+        {
+            bool odd = !(incr%2 == 1 || i%2==1);
+            string temp = getMinString(s, i, odd, a, minArr);
+            string temp1 =  getMinString(temp, 0, true, a, minArr);
+            if (temp1.compare(min) < 0)
+                min = temp1;
+        }
+
+        return min;       
+    }
+private:
+    int gcd(int a, int b)
+    {
+        if (b%a == 0)
+            return a;
+        return gcd(b%a, a);
+    }
+    
+    int getMin(int a, int b)
+    {
+        unordered_map<int, bool> visited;
+        int min = a;
+        int cur = a;
+        int fact = 0, res = 0;
+        while (visited.find(cur) == visited.end())
+        {
+            visited[cur] = true;
+            cur = (cur + b)%10;
+            fact = fact+1;
+            if (cur < min)
+            {
+                min = cur;
+                res = fact;
+            }
+                
+        }
+        
+        return res;
+    }
+    
+    void printArr(int arr[10][10])
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            for (int j = 0; j < 10; j++)
+            {
+                cout<<arr[i][j]<<" ";
+            }
+            
+            cout<<"\n";
+        }
+    }
+    
+    string getMinString(const string& s, int startIndex, bool odd, int toAdd, int arr[10][10])
+    {
+        string result = s;
+        int k = 0;
+        int l = s.size();
+        int fact = odd ? arr[s[(startIndex+1)%l]-'0'][toAdd] : arr[s[startIndex]-'0'][toAdd];
+        for (int i = startIndex; i < s.size(); i++)
+        {
+            if (odd && k%2==1)
+            {
+                result[k++] = (((s[i]-'0')+(fact*toAdd))%10)+'0';
+            }
+            else if (!odd & k%2 == 0)
+            {
+                result[k++] = (((s[i]-'0')+(fact*toAdd))%10)+'0';
+            }
+            else
+            {
+                result[k++] = s[i];
+            }
+        }
+        
+        for (int i = 0; i < startIndex; i++)
+        {
+            if (odd && k%2==1)
+            {
+                result[k++] = (((s[i]-'0')+(fact*toAdd))%10)+'0';
+            }
+            else if (!odd & k%2 == 0)
+            {
+                result[k++] = (((s[i]-'0')+(fact*toAdd))%10)+'0';
+            }
+            else
+            {
+                result[k++] = s[i];
+            }
+        }
+        
+        return result;
+
+    }
+    
+    int getMinIndex(string s, int incr)
+    {
+        int min = 0;
+        for(int i = incr; i < s.size(); i = i+incr)
+        {
+            if (getSmallIndex(s, min, i) == i)
+            {
+                min = i;
+            }
+        }
+        
+        return min;
+    }
+    
+    int getSmallIndex(const string& s, int a, int b)
+    {
+        int l = s.size();
+        int left = a;
+        int right = b;
+        for (int i = 0; i < l; i++)
+        {
+            if (s[left] < s[right])
+            {
+                return a;
+            }
+            else if(s[right] < s[left])
+            {
+                return b;
+            }
+            else
+            {
+                left = (left+1)%l;
+                right = (right+1)%l;
+            }
+        }
+        
+        return a;
+    }
+    
+    string getRotatedString(string a, int startIndex)
+    {
+        string result = a;
+        int k = 0;
+        for (int i = startIndex; i < a.size(); i++)
+        {
+            result[k++] = a[i];
+        }
+        
+        for (int i = 0; i < startIndex; i++)
+        {
+            result[k++] = a[i];
+        }
+        
+        return result;
+    }
+    
+    void modifyString(string& s, int a, const int arr[10][10], int incr)
+    {
+        for (int i = 0; i < s.size(); i=i+1)
+        {
+            if (i%2==1 || incr%2 == 1)
+            {
+                s[i] = arr[s[i]-'0'][a]+'0';
+            }
+        }
+    }
+};
