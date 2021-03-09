@@ -1,0 +1,65 @@
+// https://leetcode.com/problems/smallest-subtree-with-all-the-deepest-nodes/
+/*
+Given the root of a binary tree, the depth of each node is the shortest distance to the root.
+
+Return the smallest subtree such that it contains all the deepest nodes in the original tree.
+
+A node is called the deepest if it has the largest depth possible among any node in the entire tree.
+
+The subtree of a node is tree consisting of that node, plus the set of all descendants of that node.
+*/
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* subtreeWithAllDeepest(TreeNode* root) {
+        TreeNode* subtree = nullptr;
+        int depth;
+        subtreeWithDeepestLeaves(root, subtree, depth);
+        return subtree;
+    }
+private:
+    void subtreeWithDeepestLeaves(TreeNode* root, TreeNode*& subtree, int& depth)
+    {
+        if (root == nullptr)
+        {
+            subtree = nullptr;
+            depth = 0;
+            return;
+        }
+        
+        int leftDepth = 0;
+        int rightDepth = 0;
+        TreeNode* leftSubtree = nullptr;
+        TreeNode* rightSubtree = nullptr;
+        
+        subtreeWithDeepestLeaves(root->left, leftSubtree, leftDepth);
+        subtreeWithDeepestLeaves(root->right, rightSubtree, rightDepth);
+        
+        if (leftDepth > rightDepth)
+        {
+            depth = leftDepth + 1;
+            subtree = leftSubtree;
+        }
+        else if (rightDepth > leftDepth)
+        {
+            depth = rightDepth + 1;
+            subtree = rightSubtree;
+        }
+        else
+        {
+            depth = rightDepth + 1;
+            subtree = root;
+        }
+    }
+};
