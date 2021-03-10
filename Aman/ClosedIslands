@@ -1,0 +1,86 @@
+// https://leetcode.com/problems/number-of-closed-islands/
+/*
+Given a 2D grid consists of 0s (land) and 1s (water).  An island is a maximal 4-directionally connected group of 0s and a closed island is an island totally (all left, top, right, bottom) surrounded by 1s.
+
+Return the number of closed islands.
+*/
+
+class Solution {
+public:
+    int closedIsland(vector<vector<int>>& grid) {
+        int rows = grid.size();
+        int cols = rows > 0 ? grid[0].size() : 0;
+        int result = 0;
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                if (grid[i][j] == 0)
+                {
+                    bool danger = false;
+                    dfs(grid, i, j , danger);
+                    if(!danger)
+                    {
+                        result++;
+                    }
+                }
+            }
+        }
+        
+        return result;
+    }
+private:
+    void dfs(vector<vector<int>>& grid, int row, int col, bool& danger)
+    {
+        int rows = grid.size();
+        int cols = rows > 0 ? grid[0].size() : 0;
+        
+        if (AmIDanger(row, col, rows, cols))
+        {
+            danger = danger || true;
+            return;
+        }
+        
+        grid[row][col] = 2;
+        
+        // top
+        if (isPossible(grid, row-1, col, rows, cols))
+        {
+            dfs(grid, row-1, col, danger);
+        }
+        
+        // bottom
+        if (isPossible(grid, row+1, col, rows, cols))
+        {
+            dfs(grid, row+1, col, danger);
+        }
+        
+        // left 
+        if (isPossible(grid, row, col-1, rows, cols))
+        {
+            dfs(grid, row, col-1, danger);
+        }
+          
+        // right
+        if (isPossible(grid, row, col+1, rows, cols))
+        {
+            dfs(grid, row, col+1, danger);
+        }
+
+    }
+    
+    bool isPossible(const vector<vector<int>>& grid, int row, int col, int rows, int cols)
+    {
+        if (row < 0 || row >= rows || col < 0 || col > cols || grid[row][col] != 0)
+            return false;
+        
+        return true;
+    }
+    
+    bool AmIDanger(int row, int col, int rows, int cols)
+    {
+        if (row == 0 || row == rows-1 || col == 0 || col == cols-1)
+            return true;
+        return false;
+    }
+};

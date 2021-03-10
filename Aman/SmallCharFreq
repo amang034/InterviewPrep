@@ -1,0 +1,82 @@
+// https://leetcode.com/problems/compare-strings-by-frequency-of-the-smallest-character/
+/*
+Let the function f(s) be the frequency of the lexicographically smallest character in a non-empty string s. For example, if s = "dcce" then f(s) = 2 because the lexicographically smallest character is 'c', which has a frequency of 2.
+
+You are given an array of strings words and another array of query strings queries. For each query queries[i], count the number of words in words such that f(queries[i]) < f(W) for each W in words.
+
+Return an integer array answer, where each answer[i] is the answer to the ith query.
+*/
+
+class Solution {
+public:
+    vector<int> numSmallerByFrequency(vector<string>& queries, vector<string>& words) {
+        vector<int> queryFreq;
+        vector<int> wordFreq;
+        vector<int> result;
+        for (int i = 0; i < words.size(); i++)
+        {
+            wordFreq.push_back(GetSmallerCharFreq(words[i]));
+        }
+        
+        for (int i = 0; i < queries.size(); i++)
+        {
+            queryFreq.push_back(GetSmallerCharFreq(queries[i]));
+        }
+        
+        sort(wordFreq.begin(), wordFreq.end());
+        for (int i = 0; i < queryFreq.size(); i++)
+        {
+            int searched = search(wordFreq, queryFreq[i]);
+            int res = wordFreq.size() - searched;
+            result.push_back(res);
+        }
+        
+
+        
+        return result;
+    }
+private:
+    int GetSmallerCharFreq(string word)
+    {
+        map<char, int> freqMap;
+        for (int i = 0; i < word.size(); i++)
+        {
+            if (freqMap.find(word[i]) == freqMap.end())
+            {
+                freqMap[word[i]] = 1;
+            }
+            else
+            {
+                freqMap[word[i]] = freqMap[word[i]] + 1;
+            }
+        }
+        
+        map<char, int>::iterator iter = freqMap.begin();
+        if (iter != freqMap.end())
+            return iter->second;
+        
+
+        return 0;
+    }
+    
+    int search(const vector<int>& arr, int item)
+    {
+        int start = 0;
+        int end = arr.size()-1;
+        while (start <= end)
+        {
+            int mid = (start+end)/2;
+            
+            if (arr[mid] <= item)
+            {
+                start =  mid+1;
+            }
+            else 
+            {
+                end = mid - 1;
+            }
+        }
+        
+        return start;
+    }
+};

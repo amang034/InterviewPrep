@@ -1,0 +1,46 @@
+// https://leetcode.com/problems/maximum-binary-string-after-change/
+/*
+Return the maximum binary string you can obtain after any number of operations. Binary string x is greater than binary string y if x's decimal representation is greater than y's decimal representation.
+*/
+
+class Solution {
+public:
+    string maximumBinaryString(string binary) {
+        string result = binary;
+        int zeros = getzeroCount(binary);
+        int i = 0;
+        while (i < binary.size() && binary[i] == '1')
+        {
+            i++;
+        }
+        
+        int k = 0;
+       // cout<<"zeroes = "<<zeros<<" i = "<<i<<"\n";
+        for (; i < binary.size(); i++)
+        {
+            if (k == zeros-1)
+            {
+              //  cout<<"k = "<<k<<"\n";
+                result[i] = '0';
+            }
+            else
+                result[i] = '1';
+            
+            k++;
+        }
+        return result;
+    }
+private:
+    int getzeroCount(const string& binary)
+    {
+        int size = binary.size();
+        int res = 0;
+        for (int i = 0; i < size; i++)
+        {
+            if (binary[i] == '0')
+                res++;
+        }
+        
+        return res;
+    }
+};
