@@ -1,0 +1,74 @@
+// https://leetcode.com/problems/car-pooling/
+/*
+You are driving a vehicle that has capacity empty seats initially available for passengers.  The vehicle only drives east (ie. it cannot turn around and drive west.)
+
+Given a list of trips, trip[i] = [num_passengers, start_location, end_location] contains information about the i-th trip: the number of passengers that must be picked up, and the locations to pick them up and drop them off.  The locations are given as the number of kilometers due east from your vehicle's initial location.
+
+Return true if and only if it is possible to pick up and drop off all passengers for all the given trips. 
+*/
+
+struct Node
+{
+  int time;
+  bool start;
+  int capacity;
+    
+  Node(int t, bool s, int c)
+  {
+      time = t;
+      start = s;
+      capacity = c;
+  }
+    
+};
+
+struct MyComparer
+{
+    bool operator()(const struct Node& lhs, const struct Node &rhs)
+    {
+        if (lhs.time == rhs.time)
+        {
+            return lhs.start < rhs.start;
+        }
+        
+        return lhs.time < rhs.time;
+    }
+};
+
+class Solution {
+public:
+    bool carPooling(vector<vector<int>>& trips, int capacity) {
+        
+        vector<struct Node> Nodes;
+        for (int i = 0; i < trips.size(); i++)
+        {
+            Node n1(trips[i][1], true, trips[i][0]);
+            Node n2(trips[i][2], false, trips[i][0]);
+            Nodes.push_back(n1);
+            Nodes.push_back(n2);
+        }
+        
+        sort(Nodes.begin(), Nodes.end(), MyComparer());
+        int current = 0;
+        bool result = true;
+        for (int i = 0; i < Nodes.size(); i++)
+        {
+            if (Nodes[i].start == true)
+            {
+                current = current + Nodes[i].capacity;
+            }
+            else
+            {
+                current = current - Nodes[i].capacity;
+            }
+            
+            if (current > capacity)
+            {
+                result = false;
+                break;
+            }
+        }
+        
+        return result;
+    }
+};
