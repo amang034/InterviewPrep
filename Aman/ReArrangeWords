@@ -1,0 +1,91 @@
+// https://leetcode.com/problems/rearrange-words-in-a-sentence/
+/*
+Given a sentence text (A sentence is a string of space-separated words) in the following format:
+
+First letter is in upper case.
+Each word in text are separated by a single space.
+Your task is to rearrange the words in text such that all words are rearranged in an increasing order of their lengths. If two words have the same length, arrange them in their original order.
+
+Return the new text following the format shown above.
+*/
+
+struct word
+{
+  int start;
+  int end;
+  int pos;
+    
+  word(int s, int e, int p)
+  {
+      start = s;
+      end = e;
+      pos = p;
+  }
+};
+
+struct MyComparer
+{
+    bool operator()(const struct word& lhs, const struct word& rhs)
+    {
+        int lengthA = lhs.end-lhs.start+1;
+        int lengthB = rhs.end-rhs.start+1;
+        
+        if (lengthA == lengthB)
+        {
+            return lhs.pos < rhs.pos;
+        }
+        
+        return lengthA < lengthB;
+    }
+};
+class Solution {
+public:
+    string arrangeWords(string text) {
+        int start = 0;
+        int pos = 0;
+        vector<word> words;
+        for (int i = 0; text[i] != '\0'; i++)
+        {
+            if (text[i] == ' ')
+            {
+                word w(start, i-1, pos++);
+                words.push_back(w);
+                start = i+1;
+            }
+        }
+        word w(start, text.size()-1, pos++);
+        words.push_back(w);
+        sort(words.begin(), words.end(), MyComparer());
+        stringstream s;
+        for (int i = 0; i < words.size(); i++)
+        {
+            s << getWord(text, words[i].start, words[i].end);
+            if (i != words.size()-1)
+                s <<" ";
+        }
+        
+        string result = s.str();
+        result[0] = toupper(result[0]);
+        return result;
+    }
+private:
+    void printVector(vector<word> words, const string& text)
+    {
+        for (int i = 0; i < words.size(); i++)
+        {
+            cout<<getWord(text, words[i].start, words[i].end)<<" ";
+        }
+    }
+    
+    string getWord(const string& text, int start, int end)
+    {
+        int length = end-start+1;
+        string sub = text.substr(start, length);
+        if (start == 0)
+        {
+            sub[0] = tolower(sub[0]);
+        }
+        return sub;
+    }
+
+};

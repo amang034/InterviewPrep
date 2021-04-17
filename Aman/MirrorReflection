@@ -1,0 +1,177 @@
+
+// https://leetcode.com/problems/mirror-reflection/
+/*
+There is a special square room with mirrors on each of the four walls.  Except for the southwest corner, there are receptors on each of the remaining corners, numbered 0, 1, and 2.
+
+The square room has walls of length p, and a laser ray from the southwest corner first meets the east wall at a distance q from the 0th receptor.
+
+Return the number of the receptor that the ray meets first.  (It is guaranteed that the ray will meet a receptor eventually.)
+
+ 
+
+Example 1:
+
+Input: p = 2, q = 1
+Output: 2
+Explanation: The ray meets receptor 2 the first time it gets reflected back to the left wall.
+
+*/
+struct slope
+{
+    int a;
+    int b;
+    
+    slope(int _a, int _b)
+    {
+        a = _a;
+        b = _b;
+    }
+};
+
+struct point
+{
+  
+    double x;
+    double y;
+    
+    point(double _x, double _y)
+    {
+        x = _x;
+        y = _y;
+    }
+};
+class Solution {
+public:
+    int mirrorReflection(int p, int q) {
+        m_squareLength = p;
+        point curPoint(p, q);
+        slope curSlope(-q, p);
+        while (!AtReceptor1(curPoint) && !AtReceptor2(curPoint) && !AtReceptor0(curPoint))
+        {
+            curPoint = GetNextPoint(curSlope, curPoint);
+
+            curSlope = GetNextSlope(curSlope);
+
+        }
+        
+        if (AtReceptor1(curPoint))
+        {
+            return 1;
+        }
+        else if (AtReceptor2(curPoint))
+        {
+            return 2;
+        }
+        
+        return 0;
+    }
+private:
+    double m_squareLength;
+    bool AtReceptor1(const point& pt)
+    {
+        return (abs(pt.x-m_squareLength) < 0.000000001 && abs(pt.y-m_squareLength) < 0.000000001);
+    }
+    
+    bool AtReceptor2(const point& pt)
+    {
+        return (pt.x == 0 && abs(pt.y-m_squareLength) < 0.000000001);
+    }
+    
+    bool AtReceptor0(const point& pt)
+    {
+        return (abs(pt.x-m_squareLength) < 0.000000001 && pt.y == 0);
+    }
+    
+    slope GetNextSlope(slope cur)
+    {
+        slope res(cur.a, cur.b);
+
+        res.a = -1* res.a;
+        return res;
+    }
+    
+    point GetRightWallPoint(slope curSlope, point curPoint)
+    {
+        double y = ((curSlope.a*m_squareLength)-(curSlope.a*curPoint.x)+(curSlope.b*curPoint.y))/curSlope.b;
+        return point(m_squareLength, y);
+    }
+    
+    point GetLeftWallPoint(slope curSlope, point curPoint)
+    {
+        double y = ((curSlope.a*0)-(curSlope.a*curPoint.x)+(curSlope.b*curPoint.y))/curSlope.b;
+        return point(0, y);
+    }
+    
+    point GetTopWallPoint(slope curSlope, point curPoint)
+    {
+        double x = ((curSlope.b*m_squareLength)-(curSlope.b*curPoint.y)+(curSlope.a*curPoint.x))/curSlope.a;
+        return point(x, m_squareLength);
+    }
+    
+    point GetBottomWallPoint(slope curSlope, point curPoint)
+    {
+        double x = ((curSlope.b*0)-(curSlope.b*curPoint.y)+(curSlope.a*curPoint.x))/curSlope.a;
+        return point(x, 0);
+    }
+    
+    point GetNextPoint(slope curSlope, point curPoint)
+    {
+
+        point p = GetRightWallPoint(curSlope, curPoint);
+
+        if (valid(p, curPoint))
+        {
+            return p;
+        }
+        
+        p = GetLeftWallPoint(curSlope, curPoint);
+
+        if (valid(p, curPoint))
+        {
+
+            return p;
+        }
+        
+        p = GetTopWallPoint(curSlope, curPoint);
+
+
+        if (valid(p, curPoint))
+        {
+
+            return p;
+        }
+        
+        p = GetBottomWallPoint(curSlope, curPoint);
+
+
+        if (valid(p, curPoint))
+        {
+
+            return p;
+        }
+        
+        cout<<"Should never come here ";
+        return p;
+    }
+    
+    bool valid(const point& p, const point& curPoint)
+    {
+        if (p.x == curPoint.x && p.y == curPoint.y)
+            return false;
+        
+        if (p.x > m_squareLength || p.x < 0 || p.y > m_squareLength || p.y < 0)
+            return false;
+        
+        return true;
+    }
+    
+    void DisplayPoint(const point& p)
+    {
+        cout<<"("<<p.x<<","<<p.y<<")    ";
+    }
+    
+    void DisplaySlope(const slope& s)
+    {
+        cout<<"("<<s.a<<","<<s.b<<")    ";
+    }
+};
