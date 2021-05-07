@@ -1,0 +1,44 @@
+// https://leetcode.com/problems/binary-tree-right-side-view/
+/*
+Given the root of a binary tree, imagine yourself standing on the right side of it, return the values of the nodes you can see ordered from top to bottom
+*/
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    vector<int> rightSideView(TreeNode* root) {
+        map<int, int> rightVals;
+        rightSideView(root, 0, rightVals);
+        map<int, int>::iterator iter;
+        vector<int> result;
+        for (iter = rightVals.begin(); iter != rightVals.end(); iter++)
+        {
+            result.push_back(iter->second);
+        }
+        
+        return result;
+        
+    }
+private:
+    void rightSideView(TreeNode* root, int level, map<int, int>& rightVals)
+    {
+        if (root == nullptr)
+        {
+            return;
+        }
+        
+        rightVals[level] = root->val;
+        rightSideView(root->left, level+1, rightVals);
+        rightSideView(root->right, level+1, rightVals);
+    }
+};

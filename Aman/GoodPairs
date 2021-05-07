@@ -1,0 +1,104 @@
+// https://leetcode.com/problems/number-of-good-leaf-nodes-pairs/
+/*
+Given the root of a binary tree and an integer distance. A pair of two different leaf nodes of a binary tree is said to be good if the length of the shortest path between them is less than or equal to distance.
+
+Return the number of good leaf node pairs in the tree.
+*/
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    int countPairs(TreeNode* root, int distance) {
+        vector<int> leafNodes;
+        return countPairs(root, distance, leafNodes);
+    }
+private:
+    int countPairs(TreeNode* root, int distance, vector<int>& leafNodes)
+    {
+        if (root == nullptr)
+        {
+            return 0;
+        }
+        
+        if (root->left == nullptr && root->right == nullptr)
+        {
+            leafNodes.push_back(1);
+            return 0;
+        }
+        
+        vector<int> leftLeafNodes;
+        vector<int> rightLeafNodes;
+        int leftSol = countPairs(root->left, distance, leftLeafNodes);
+        int rightSol = countPairs(root->right, distance, rightLeafNodes);
+        
+    //    if (root->val == 1)
+    //    {
+    //        PrintVector(leftLeafNodes);
+    //        PrintVector(rightLeafNodes);
+    //    }
+        
+        MergeVectors(leftLeafNodes, rightLeafNodes, leafNodes);
+        return leftSol + rightSol+GetCrossPairs(leftLeafNodes, rightLeafNodes, distance);
+        
+    }
+    
+    void PrintVector(const vector<int>& nodes)
+    {
+        cout<<"---------------------------\n";
+        
+        for (int i = 0; i < nodes.size(); i++)
+        {
+            cout<<nodes[i]<<" ";
+        }
+        cout<<"\n---------------------------";
+    }
+    void MergeVectors(const vector<int>& leftLeafNodes, const vector<int>& rightLeafNodes, vector<int>& leafNodes)
+    {
+        leafNodes.push_back(0);
+        // Left
+        for (int i = 0; i < leftLeafNodes.size(); i++)
+        {
+          leafNodes.push_back(leftLeafNodes[i]);  
+        }
+        
+        // add right
+        for (int i = 1; i < leafNodes.size() && i-1 < rightLeafNodes.size(); i++)
+        {
+            leafNodes[i] = leafNodes[i] + rightLeafNodes[i-1];
+        }
+        
+        for (int i = leafNodes.size(); i-1 < rightLeafNodes.size(); i++)
+        {
+            leafNodes.push_back(rightLeafNodes[i-1]); 
+        }
+    }
+    
+    int GetCrossPairs(const vector<int>& leftLeafNodes, const vector<int>& rightLeafNodes, int distance)
+    {
+        if (distance-2 < 0)
+        {
+            return 0;
+        }
+        
+        int maxLimit = distance - 2;
+        int res = 0;
+        for (int i = 0; i < leftLeafNodes.size() && i<=maxLimit; i++)
+        {
+            for (int j = 0; j < rightLeafNodes.size() && i+j <=maxLimit; j++)
+            {
+                res = res + (leftLeafNodes[i]*rightLeafNodes[j]);
+            }
+        }
+        
+        return res;
+    }
+};

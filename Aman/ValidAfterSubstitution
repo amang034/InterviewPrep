@@ -1,0 +1,90 @@
+// https://leetcode.com/problems/check-if-word-is-valid-after-substitutions/
+/*
+Given a string s, determine if it is valid.
+
+A string s is valid if, starting with an empty string t = "", you can transform t into s after performing the following operation any number of times:
+
+Insert string "abc" into any position in t. More formally, t becomes tleft + "abc" + tright, where t == tleft + tright. Note that tleft and tright may be empty.
+Return true if s is a valid string, otherwise, return false
+
+Input: s = "aabcbc"
+Output: true
+Explanation:
+"" -> "abc" -> "aabcbc"
+Thus, "aabcbc" is valid.
+
+*/
+
+class Solution {
+public:
+    bool isValid(string s) {
+        int aCount= 0;
+        int bCount = 0;
+        int cCount = 0;
+        vector<int> dp(s.size(), -1);
+        
+        if (s.size() == 0)
+            return true;
+        
+        if (s[0] != 'a' || s[s.size()-1] != 'c')
+            return false;
+        
+        for (int i = 0; i < s.size(); i++)
+        {
+          
+            if (s[i] == 'a')
+                dp[i] = -1;
+            
+            if (s[i] == 'b')
+            {
+                dp[i] = getAforB(s, i-1, dp);
+                if (dp[i] == -1)
+                    return false;
+            }
+            
+            if (s[i] == 'c')
+            {
+                dp[i] = getAforC(s, i-1, dp);
+                if (dp[i] == -1)
+                    return false;
+            }
+            
+            if (s[i] == 'a')
+                aCount++;
+            else if (s[i] == 'b')
+                bCount++;
+            else
+                cCount++;
+        }
+        
+        return (aCount == bCount && aCount == cCount );
+    }
+private:
+    int getAforB(const string& s, int prevPos, const vector<int>& dp)
+    {
+        if (prevPos < 0 )
+            return -1;
+        
+        if (s[prevPos] == 'b')
+            return -1;
+        
+        if (s[prevPos] == 'a')
+            return prevPos;
+        
+        return getAforB(s, dp[prevPos]-1, dp);
+    }
+    
+    int getAforC(const string& s, int prevPos, const vector<int>& dp)
+    {
+        if (prevPos < 0 )
+            return -1;
+        
+        if (s[prevPos] == 'a')
+            return -1;
+        
+        if (s[prevPos] == 'b')
+            return dp[prevPos];
+        
+        return getAforC(s, dp[prevPos]-1, dp);
+    }
+};

@@ -1,0 +1,42 @@
+//https://leetcode.com/problems/jump-game-ii/
+
+/*
+Given an array of non-negative integers nums, you are initially positioned at the first index of the array.
+
+Each element in the array represents your maximum jump length at that position.
+
+Your goal is to reach the last index in the minimum number of jumps.
+
+You can assume that you can always reach the last index.
+
+ 
+*/
+
+class Solution {
+public:
+    int jump(vector<int>& nums) {
+        int jumps = 0;
+        int end = 0;
+        int farthest = 0;
+        int last = nums.size()-1;
+        for (int i = 0; i < nums.size(); i++)
+        {
+            farthest = max(farthest, nums[i]+i);
+            if (i == end && i != last)
+            {
+                jumps++;
+                end = farthest;
+            }
+            
+        }
+        
+        return jumps;
+    }
+private:
+    int max(int a, int b)
+    {
+        if (a > b)
+            return a;
+        return b;
+    }
+};
